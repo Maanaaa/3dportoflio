@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="M de Manya">
+  <title>M — Favicon</title>
+  <desc>Monogramme M stylisé sur fond noir.</desc>
+
+  <circle cx="50" cy="50" r="48" fill="#111"/>
+  <path fill="#ff2e9c" d="
+    M26,70
+    L26,30
+    H38
+    L50,50
+    L62,30
+    H74
+    V70
+    H62
+    V50
+    L50,70
+    L38,50
+    V70
+    Z"/>
+</svg>

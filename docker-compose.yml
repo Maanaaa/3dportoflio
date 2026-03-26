@@ -1,0 +1,49 @@
+services:
+  webserver:
+    image: oktopod/frankenphp-base:latest
+    container_name: ${PROJECT_NAME}-webserver
+    environment:
+          PHP_INI_MEMORY_LIMIT: 512M
+          PHP_INI_UPLOAD_MAX_FILESIZE: 100M
+          PHP_INI_POST_MAX_SIZE: 100M
+          PHP_INI_MAX_EXECUTION_TIME: 300
+    working_dir: /app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./app:/app/public
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:latest
+    container_name: ${PROJECT_NAME}-db
+    restart: always
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+
+  pma:
+    image: phpmyadmin:latest
+    container_name: ${PROJECT_NAME}-pma
+    environment:
+      PMA_HOST: db 
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD}
+      UPLOAD_LIMIT: 300M
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    links:
+      - db
+
+volumes:
+  db_data: {}
