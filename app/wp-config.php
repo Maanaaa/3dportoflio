@@ -92,6 +92,27 @@ define( 'WP_DEBUG', false );
 define( 'DISALLOW_FILE_EDIT', true );
 define( 'WP_POST_REVISIONS', 5 );
 
+/* 
+Mana Must-Use Plugin
+*/
+
+// Masquer les Articles
+define('HIDE_ARTICLES', true);
+
+// Masquer les Pages
+define('HIDE_PAGES', true);
+
+// Masquer les Commentaires
+define('HIDE_COMMENTS', true);
+
+//Masquer les Médias (Bibliothèque)
+//define('HIDE_MEDIA', false);
+
+
+
+// Masquer le menu Extensions (Plugins)
+//define('HIDE_PLUGINS', false); 
+
 /* That's all, stop editing! Happy publishing. */
 
 /** Absolute path to the WordPress directory. */

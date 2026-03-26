@@ -1,0 +1,17 @@
+<?php
+/**
+ * Plugin Name: Mana Must-Use Plugin
+ * Description: Gestion des CPT Projets, Réglages 3D et White Label.
+ * Version: 1.0
+ * Author: Théo Manya
+ */
+
+if (!defined('ABSPATH')) exit;
+
+define('MANA_CORE_DIR', plugin_dir_path(__FILE__) . 'core/');
+
+// L'ordre est VITAL : config d'abord !
+require_once MANA_CORE_DIR . 'config.php';
+require_once MANA_CORE_DIR . 'admin-settings.php';
+require_once MANA_CORE_DIR . 'post-types.php';
+require_once MANA_CORE_DIR . 'white-label.php';
