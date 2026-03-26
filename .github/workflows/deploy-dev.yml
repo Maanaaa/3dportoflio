@@ -15,8 +15,8 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_KEY }}
           script: |
-            cd ~/sae/3dportfolios
+            cd /root/sae/3dportfolio
             git pull origin dev
-            docker compose up -d --build
+            docker compose up -d --build --remove-orphans
