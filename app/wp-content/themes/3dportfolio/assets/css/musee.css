@@ -1,0 +1,51 @@
+/* Force le musée à déborder des marges WordPress pour prendre tout l'écran */
+#musee-container {
+    position: fixed; /* On passe de relative à fixed */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    z-index: 1; /* Derrière l'admin bar WP si besoin */
+    background: #000;
+}
+
+/* On s'assure que le body n'a pas de scroll ou de padding */
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Si tu as la barre d'admin WordPress en haut, on peut l'ajuster */
+.admin-bar #musee-container {
+    top: 32px; /* Hauteur standard de la barre d'admin */
+    height: calc(100vh - 32px);
+}
+
+#instructions {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid var(--accent-pink);
+    z-index: 20;
+}
+
+#start-button {
+    background: var(--gradient-primary);
+    border: none;
+    padding: 15px 30px;
+    color: white;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+

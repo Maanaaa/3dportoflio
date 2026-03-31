@@ -100,7 +100,7 @@ Mana Must-Use Plugin
 define('HIDE_ARTICLES', true);
 
 // Masquer les Pages
-define('HIDE_PAGES', true);
+//define('HIDE_PAGES', true);
 
 // Masquer les Commentaires
 define('HIDE_COMMENTS', true);

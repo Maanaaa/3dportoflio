@@ -1,6 +1,127 @@
-/*
- * Theme Name: Portfolio3D
- * Description: Thème de mon portfolio immersif
- * Author: Théo Manya
- * Version: 1.0
- */
+/* THEME 3D PORTFOLIO
+name: 3D Portfolio
+version: 1.0
+author: Théo Manya
+*/
+
+.sae-hero {
+    padding: 120px 0 80px;
+    text-align: center;
+}
+
+.main-title { font-size: 5rem; line-height: 1; margin: 20px 0; }
+.project-pitch { max-width: 700px; margin: 0 auto 40px; font-size: 1.2rem; color: var(--text-muted); }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; padding: 80px 0; }
+
+.tech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 50px; }
+.tech-item { 
+    background: rgba(255,255,255,0.03); 
+    padding: 40px; 
+    border-radius: 20px; 
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: 0.3s;
+}
+.tech-item:hover { border-color: var(--accent-pink); background: rgba(255,255,255,0.05); }
+.tech-item i { color: var(--accent-pink); margin-bottom: 20px; width: 32px; height: 32px; }
+
+.stat-card {
+    background: var(--gradient-primary);
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    color: white;
+}
+.stat-card h3 { margin: 0; font-size: 2rem; }
+a{
+    color: white;
+}
+/* Boutons */
+.btn-primary { 
+    background: var(--gradient-primary); 
+    padding: 15px 35px; 
+    border-radius: 30px; 
+    text-decoration: none; 
+    font-weight: bold;
+}
+.btn-outline { 
+    border: 1px solid white; 
+    padding: 15px 35px; 
+    border-radius: 30px; 
+    text-decoration: none; 
+    margin-left: 15px;
+}
+
+/* THREE.JS */
+/* Cache le scroll et les éléments WP sur la page musée */
+.page-template-page-musee {
+    overflow: hidden;
+}
+.page-template-page-musee header, 
+.page-template-page-musee footer {
+    display: none;
+}
+
+
+#instructions {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 3rem;
+    border-radius: 20px;
+    border: 2px solid #ff2e88;
+    z-index: 1000;
+}
+
+#start-button {
+    background: linear-gradient(135deg, #ff2e88 0%, #3b82f6 100%);
+    border: none;
+    padding: 1rem 2rem;
+    color: white;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: transform 0.2s;
+}
+
+#start-button:hover {
+    transform: scale(1.1);
+}
+
+/* 1. On reset les marges de la page pour éviter les bords blancs */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important; /* Empêche le scroll de la page WP */
+}
+
+/* 2. On force le container en FIXED pour qu'il ignore les div de ton thème */
+#musee-container {
+    position: fixed !important; 
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 99999; /* Par-dessus le header/footer du thème */
+    background: #000;
+}
+
+/* 3. On ajuste si la barre d'admin WP est présente */
+body.admin-bar #musee-container {
+    top: 32px !important;
+    height: calc(100vh - 32px) !important;
+}
+
+/* 4. On s'assure que le canvas Three.js suit */
+#musee-container canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
