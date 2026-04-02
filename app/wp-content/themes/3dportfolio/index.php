@@ -40,7 +40,6 @@
     </div>
 </section>
 
-<!-- Section 3: L'Architecture Technique (Pour Antony Constantin) -->
 <section id="technique" class="sae-tech">
     <div class="container">
         <h2 class="center">Architecture des données</h2>

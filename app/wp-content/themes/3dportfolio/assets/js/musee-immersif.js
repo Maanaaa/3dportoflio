@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
-// --- SHADER FEU LIQUIDE ---
+// Shader de feu liquide
 const FireShader = {
     uniforms: {
         "iTime": { value: 0 },
@@ -17,47 +17,61 @@ const FireShader = {
     `,
     fragmentShader: `
         uniform float iTime;
-        uniform vec2 iResolution;
         uniform float opacity;
         varying vec2 vUv;
 
-        float rand(vec2 n) {
-            return fract(sin(dot(n, vec2(12.9898,12.1414))) * 83758.5453);
+        // 1. Fonction pour générer un chiffre aléatoire
+        float random(vec2 coord) {
+            return fract(sin(dot(coord, vec2(12.9898, 78.233))) * 43758.5453);
         }
-        float noise(vec2 n) {
-            const vec2 d = vec2(0.0, 1.0);
-            vec2 b = floor(n);
-            vec2 f = mix(vec2(0.0), vec2(1.0), fract(n));
-            return mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);
-        }
-        vec3 ramp(float t) {
-            return t <= .5 ? vec3( 1. - t * 1.4, .2, 1.05 ) / t : vec3( .3 * (1. - t) * 2., .2, 1.05 ) / t;
-        }
-        float fire(vec2 n) {
-            return noise(n) + noise(n * 2.1) * .6 + noise(n * 5.4) * .42;
+
+        // 2. Fonction pour créer des "nuages" ou du "bruit" fluide
+        float noise(vec2 coord) {
+            vec2 grilleId = floor(coord); // La case de la grille
+            vec2 grilleUv = fract(coord); // La position dans la case
+            
+            // Adoucir les transitions (interpolation)
+            vec2 lissage = grilleUv * grilleUv * (3.0 - 2.0 * grilleUv);
+
+            // Prendre une valeur aléatoire pour les 4 coins de la case
+            float basGauche = random(grilleId);
+            float basDroite = random(grilleId + vec2(1.0, 0.0));
+            float hautGauche = random(grilleId + vec2(0.0, 1.0));
+            float hautDroite = random(grilleId + vec2(1.0, 1.0));
+
+            // Mélanger le tout pour faire une tache floue
+            float bas = mix(basGauche, basDroite, lissage.x);
+            float haut = mix(hautGauche, hautDroite, lissage.x);
+            return mix(bas, haut, lissage.y);
         }
 
         void main() {
-            float t = iTime;
             vec2 uv = vUv;
             
-            float pulse = sin(t * 2.0) * 0.1 + 0.9;
-            uv -= 0.5;
-            uv *= pulse;
-            uv += 0.5;
+            // ÉTAPE A : Animer le mouvement
+            // On décale les coordonnées avec le temps pour que le fluide avance
+            vec2 mouvement = uv;
+            mouvement.x -= iTime * 0.3; // Défilement horizontal
+            mouvement.y -= iTime * 0.5; // Défilement vertical (le feu monte)
 
-            uv.x *= iResolution.x / iResolution.y;
-            uv.x += uv.y < .5 ? 23.0 + t * .35 : -11.0 + t * .3;    
-            uv.y = abs(uv.y - .5);
-            uv *= 5.0;
-            float q = fire(uv - t * .013) / 2.0;
-            vec2 r = vec2(fire(uv + q / 2.0 + t - uv.x - uv.y), fire(uv + q - t));
-            float grad = pow((r.y + r.y) * max(.0, uv.y) + .1, 4.0);
-            vec3 color = ramp(grad);
+            // ÉTAPE B : Dessiner le feu
+            // On génère une première couche de taches (agrandie 5 fois)
+            float intensite = noise(mouvement * 5.0);
             
-            color /= (1.20 + max(vec3(0.0), color));
+            // On ajoute une deuxième couche plus petite pour les détails
+            intensite += noise(mouvement * 10.0) * 0.5;
+
+            // ÉTAPE C : Gérer la couleur
+            // Une couleur de base (un rose/magenta vif pour aller avec tes lumières)
+            vec3 couleurBase = vec3(1.0, 0.18, 0.53); 
             
-            gl_FragColor = vec4(color, opacity);
+            // On multiplie la couleur par les taches générées
+            vec3 couleurFinale = couleurBase * intensite;
+            
+            // On booste un peu la luminosité pour l'effet néon
+            couleurFinale *= 1.8;
+
+            gl_FragColor = vec4(couleurFinale, opacity);
         }
     `
 };
@@ -117,7 +131,8 @@ window.addEventListener('DOMContentLoaded', () => {
         isPopupOpen = false;
         projectPopup.style.display = 'none';
         popupIframe.src = ''; 
-        popupIframe.style.opacity = "0"; // On cache l'iframe à la fermeture
+        // On cache l'iframe à la fermeture
+        popupIframe.style.opacity = "0"; 
         controls.lock();
     });
 
@@ -134,12 +149,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
             if(source && source !== "#") {
                 popupIframe.src = source;
-                popupIframe.style.opacity = "1"; // On affiche l'iframe une fois qu'on a cliqué
+                // On affiche l'iframe une fois qu'on a cliqué
+                popupIframe.style.opacity = "1"; 
             }
         });
     });
 
-    // --- CRÉATION DU GROUPE NÉON (POUR LE HOVER) ---
+    // Création du groupe néon pour le hover
     const neonGroup = new THREE.Group();
     const neonMat = new THREE.ShaderMaterial({
         uniforms: THREE.UniformsUtils.clone(FireShader.uniforms),
@@ -181,7 +197,7 @@ window.addEventListener('DOMContentLoaded', () => {
     lumierePlafond.position.set(0, 8, 0);
     scene.add(lumierePlafond);
 
-    // Sol & murs
+    // Sol et murs
     const sol = new THREE.Mesh(
         new THREE.PlaneGeometry(40, 100),
         new THREE.MeshStandardMaterial({ color: 0x080808, roughness: 0.8 })
@@ -194,12 +210,14 @@ window.addEventListener('DOMContentLoaded', () => {
     const murG = new THREE.Mesh(new THREE.BoxGeometry(1, 12, 100), murMat);
     murG.position.set(-10, 3, 0);
     scene.add(murG);
+    
     const murD = new THREE.Mesh(new THREE.BoxGeometry(1, 12, 100), murMat);
     murD.position.set(10, 3, 0);
     scene.add(murD);
 
     let listToiles = [];
 
+    // Récupération des projets via l'API WordPress
     fetch('/wp-json/wp/v2/projet?acf_format=standard&per_page=10')
         .then(res => res.json())
         .then(projets => {
@@ -244,7 +262,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 scene.add(toile);
                 listToiles.push(toile);
 
-                // Spotlights - INTENSITÉ AJUSTÉE À 12 POUR UN MEILLEUR ÉQUILIBRE
+                // Spotlights avec intensité ajustée à 12
                 const spot = new THREE.SpotLight(0xff2e88, 12);
                 const spotX = (pos.x < 0) ? -6.5 : 6.5;
                 spot.position.set(spotX, 6, pos.z);
@@ -268,6 +286,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const raycaster = new THREE.Raycaster();
     const centreEcran = new THREE.Vector2(0, 0);
 
+    // Gestion de l'interaction avec les toiles
     window.addEventListener('click', () => {
         if (!controls.isLocked || isPopupOpen || isTransitioning) return;
 
@@ -299,8 +318,10 @@ window.addEventListener('DOMContentLoaded', () => {
                 
                 renderer.render(scene, camera);
                 const vector = object.position.clone().project(camera);
-                const wH = window.innerWidth / 2, hH = window.innerHeight / 2;
-                const pX = (vector.x * wH) + wH, pY = -(vector.y * hH) + hH;
+                const wH = window.innerWidth / 2;
+                const hH = window.innerHeight / 2;
+                const pX = (vector.x * wH) + wH;
+                const pY = -(vector.y * hH) + hH;
                 const fov = camera.fov * (Math.PI / 180);
                 const hPX = (2.5 * window.innerHeight) / (2 * Math.tan(fov / 2) * zoomDistance);
                 const wPX = hPX * (4.5 / 2.5);
@@ -327,6 +348,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', (e) => touches[e.key.toLowerCase()] = true);
     document.addEventListener('keyup', (e) => touches[e.key.toLowerCase()] = false);
 
+    // Boucle d'animation principale
     function animate() {
         requestAnimationFrame(animate);
         const elapsedTime = clock.getElapsedTime();
@@ -345,7 +367,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         if (controls.isLocked && !isPopupOpen && !isTransitioning) {
-            const vitesse = 0.15;
+            const vitesse = 0.35;
             if (touches.z) controls.moveForward(vitesse);
             if (touches.s) controls.moveForward(-vitesse);
             if (touches.q) controls.moveRight(-vitesse);
@@ -364,6 +386,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     neonGroup.position.x += offset;
                     neonGroup.visible = true;
                 }
+                // Mise à jour du temps pour animer le shader de feu
                 neonMat.uniforms.iTime.value = elapsedTime;
             } else {
                 currentHoveredTableau = null;
@@ -375,8 +398,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
         renderer.render(scene, camera);
     }
+    
     animate();
 
+    // Gestion du redimensionnement de la fenêtre
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
