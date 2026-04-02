@@ -54,9 +54,7 @@ a{
 
 /* THREE.JS */
 /* Cache le scroll et les éléments WP sur la page musée */
-.page-template-page-musee {
-    overflow: hidden;
-}
+
 .page-template-page-musee header, 
 .page-template-page-musee footer {
     display: none;
@@ -99,7 +97,6 @@ html, body {
     padding: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    overflow: hidden !important; /* Empêche le scroll de la page WP */
 }
 
 /* 2. On force le container en FIXED pour qu'il ignore les div de ton thème */
