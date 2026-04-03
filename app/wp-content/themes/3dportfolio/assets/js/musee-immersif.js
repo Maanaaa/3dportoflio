@@ -149,6 +149,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
             if(source && source !== "#") {
                 popupIframe.src = source;
+
                 // On affiche l'iframe une fois qu'on a cliqué
                 popupIframe.style.opacity = "1"; 
             }
